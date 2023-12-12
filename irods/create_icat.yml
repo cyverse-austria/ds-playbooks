@@ -4,7 +4,9 @@
   run_once: true
   become: true
   gather_facts: false
+
   tasks:
+
     - name: create DB on primary DBMS
       import_role:
         name: postgresql_db
@@ -13,6 +15,7 @@
         postgresql_db_name: ICAT
         postgresql_db_admin_user: "{{ _irods_db_user }}"
         postgresql_db_admin_password: "{{ _irods_db_password }}"
-      delegate_to: "{{ _irods_dbms_host }}"
+      # delegate_to: "{{ _irods_dbms_host }}"
+      delegate_to: "{{ groups['dbms_primary'][0] }}"
       delegate_facts: true
       become_user: postgres

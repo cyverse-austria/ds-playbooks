@@ -1,24 +1,24 @@
 ---
-- name: Prepare for PostgreSQL
-  hosts: dbms
-  become: true
-  roles:
-    - role: adfinis_sygroup.grub
-      vars:
-        grub_console: false
-        grub_consoles: []
-        grub_serial: []
-        grub_timeout: 0
-        grub_disable_network_predictable_interface_names: false
-        grub_cmdline_linux_default_list:
-          - transparent_hugepage=never
-      tags: no_testing
+# - name: Prepare for PostgreSQL
+#   hosts: dbms
+#   become: true
+#   roles:
+#     - role: adfinis_sygroup.grub
+#       vars:
+#         grub_console: false
+#         grub_consoles: []
+#         grub_serial: []
+#         grub_timeout: 0
+#         grub_disable_network_predictable_interface_names: false
+#         grub_cmdline_linux_default_list:
+#           - transparent_hugepage=never
+#       tags: no_testing
 
 
 - name: Set up primary DBMS
   hosts: dbms_primary
   become: true
-  gather_facts: false
+  # gather_facts: false
   vars:
     effective_cache_size: >-
       {{ _dbms_effective_cache_size if _dbms_effective_cache_size else
@@ -62,7 +62,7 @@
 - name: Set up replica DBMSs
   hosts: dbms_replicas
   become: true
-  gather_facts: false
+  # gather_facts: false
   vars:
     effective_cache_size: >-
       {{ _dbms_effective_cache_size if _dbms_effective_cache_size else

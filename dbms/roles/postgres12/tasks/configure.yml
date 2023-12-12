@@ -45,6 +45,19 @@
   notify:
     - Restart postgres
 
+- name: DEBUG1
+  ansible.builtin.debug:
+    var: postgres12_upstream_node
+- name: DEBUG2
+  ansible.builtin.debug:
+    var: postgres12_downstream_nodes
+- name: DEBUG3
+  ansible.builtin.debug:
+    msg: "{{ lookup('dig', postgres12_downstream_nodes[0]) }}"
+- name: DEBUG4
+  ansible.builtin.debug:
+    msg: "{{ lookup('dig', postgres12_upstream_node) }}"
+
 - name: Configure | ensure block in pg_hba.conf exists
   ansible.builtin.blockinfile:
     path: "{{ postgres12_conf_path }}/pg_hba.conf"
