@@ -8,7 +8,7 @@
     - name: Ensure service user type exists
       irods_user_type:
         type: ds-service
-        description: a Data Store service
+        description: "a Data Store service"
 
     - name: Ensure public group's home is correct
       become: false
@@ -120,7 +120,7 @@
       ansible.builtin.shell:
         executable: /bin/bash
         cmd: |
-          set -o errexit
+          # set -o errexit
           res="$(iquest '%s' "select RULE_EXEC_ID where RULE_EXEC_NAME = '{{ item }}'")"
           if [[ -z "$res" ]]; then
             exit 1

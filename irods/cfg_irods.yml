@@ -6,8 +6,8 @@
   vars:
     amqp_user_info: "{{ _amqp_user }}:{{ _amqp_password }}"
     amqp_authority: "{{ amqp_user_info }}@{{ _amqp_host }}:{{ _amqp_port }}"
-    amqp_path: /{{ _amqp_vhost | replace('/', '%2F') }}
-    amqp_uri: amqp://{{ amqp_authority }}{{ amqp_path }}
+    amqp_path: "/{{ _amqp_vhost | replace('/', '%2F') }}"
+    amqp_uri: "amqp://{{ amqp_authority }}{{ amqp_path }}"
     provider: "{{ inventory_hostname in groups['irods_catalog'] }}"
   tasks:
     - name: Initialize flag
@@ -72,8 +72,10 @@
         irods_cfg_default_dir_mode: "{{ _irods_default_dir_mode }}"
         irods_cfg_default_file_mode: "{{ _irods_default_file_mode }}"
         irods_cfg_default_hash_scheme: "{{ _irods_default_hash_scheme }}"
+        # irods_cfg_environment_variables:
+        #   IRODS_AMQP_URI: amqp_uri
         irods_cfg_environment_variables: >-
-          {{ {'IRODS_AMQP_URI': amqp_uri} if provider | bool else {} }}
+          {{ {"IRODS_AMQP_URI": amqp_uri} if provider | bool else {} }}
         irods_cfg_federation: "{{ _irods_federation }}"
         irods_cfg_match_hash_policy: "compatible" # new
         irods_cfg_negotiation_key: "{{ _irods_negotiation_key }}"
