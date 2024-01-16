@@ -26,27 +26,21 @@ main()
   local id
   id=$(quest "select TOKEN_ID where TOKEN_NAMESPACE = 'user_type' and TOKEN_NAME = '$type'")
 
-  if [ -z "$id" ]
-  then
+  if [ -z "$id" ]; then
     local errMsg
-    if ! errMsg=$(iadmin at user_type "$type" "" "$description")
-    then
+    if ! errMsg=$(iadmin at user_type "$type" "" "$description"); then
       fail "$errMsg"
     fi
     changed="true"
+  else
+    local currentDesc
+    currentDesc=$(quest "select TOKEN_VALUE2 where TOKEN_ID = '$id'")
+    if [ "$description" != "$currentDesc" ]; then
+      fail "user type $type already in use for another purpose"
+    fi
   fi
-
-  local currentDesc
-  currentDesc=$(quest "select TOKEN_VALUE2 where TOKEN_ID = '$id'")
-
-  if [ "$description" != "$currentDesc" ]
-  then
-    fail "user type $type already in use for another purpose"
-  fi
-
   endoutput
 }
-
 
 quest()
 {
@@ -54,13 +48,11 @@ quest()
 
   local response
   # if ! response=$(iquest --no-page '%s' "$query" 2>&1)
-  if ! response=$(iquest --no-page '%s' "$query")
-  then
+  if ! response=$(iquest --no-page '%s' "$query"); then
     fail "$response"
   fi
 
-  if ! [[ "$response" =~ ^CAT_NO_ROWS_FOUND ]]
-  then
+  if ! [[ "$response" =~ ^CAT_NO_ROWS_FOUND ]]; then
     printf '%s' "$response"
   fi
 }
@@ -71,19 +63,15 @@ read_field()
   local field="$2"
 
   local defaultValue
-  if [ "$#" -ge 3 ]
-  then
+  if [ "$#" -ge 3 ]; then
     defaultValue="$3"
   fi
 
   local value
-  if ! value=$(jq --raw-output ".$field // empty" < "$varFile")
-  then
+  if ! value=$(jq --raw-output ".$field // empty" < "$varFile"); then
     fail "$value"
-  elif [ -z "$value" ]
-  then
-    if [ "${defaultValue:-}" ]
-    then
+  elif [ -z "$value" ]; then
+    if [ "${defaultValue:-}" ]; then
       value="$defaultValue"
     else
       fail "variable '$field' must be defined"
@@ -123,7 +111,7 @@ stdout=""
 stderr=""
 msg=""
 stderroutfile="/tmp/stderr"
-# trap 'rm -f ${tmpfstderr}' 0 1 2 3
+trap 'rm -f ${tmpfstderr}' 0 1 2 3
 # trap 'exec 2>&4 1>&3; rm -f ${tmpfstdout} ${tmpfstderr}' 0 1 2 3
 # trap 'exec 2>&4 1>&3; rm -f /tmp/stdout /tmp/stderr' 0 1 2 3
 # trap 'exec 2>&4 1>&3' 0 1 2 3
