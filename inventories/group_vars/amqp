@@ -1,0 +1,3 @@
+---
+amqp_admin_username: "{{ amqp_username }}"
+amqp_admin_password: "{{ amqp_password }}"

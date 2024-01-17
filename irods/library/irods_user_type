@@ -14,11 +14,9 @@
 
 # WANT_JSON
 
-
 main()
 {
   local varFile="$1"
-
   local type
   local description
 
@@ -28,45 +26,36 @@ main()
   local id
   id=$(quest "select TOKEN_ID where TOKEN_NAMESPACE = 'user_type' and TOKEN_NAME = '$type'")
 
-  if [ -z "$id" ]
-  then
+  if [ -z "$id" ]; then
     local errMsg
-    if ! errMsg=$(iadmin at user_type "$type" '' "$description" 2>&1)
-    then
+    if ! errMsg=$(iadmin at user_type "$type" "" "$description"); then
       fail "$errMsg"
     fi
-
-    succeed true
+    changed="true"
+  else
+    local currentDesc
+    currentDesc=$(quest "select TOKEN_VALUE2 where TOKEN_ID = '$id'")
+    if [ "$description" != "$currentDesc" ]; then
+      fail "user type $type already in use for another purpose"
+    fi
   fi
-
-  local currentDesc
-  currentDesc=$(quest "select TOKEN_VALUE2 where TOKEN_ID = '$id'")
-
-  if [ "$description" != "$currentDesc" ]
-  then
-    fail "user type $type already in use for another purpose"
-  fi
-
-  succeed false
+  endoutput
 }
-
 
 quest()
 {
   local query="$*"
 
   local response
-  if ! response=$(iquest --no-page '%s' "$query" 2>&1)
-  then
+  # if ! response=$(iquest --no-page '%s' "$query" 2>&1)
+  if ! response=$(iquest --no-page '%s' "$query"); then
     fail "$response"
   fi
 
-  if ! [[ "$response" =~ ^CAT_NO_ROWS_FOUND ]]
-  then
+  if ! [[ "$response" =~ ^CAT_NO_ROWS_FOUND ]]; then
     printf '%s' "$response"
   fi
 }
-
 
 read_field()
 {
@@ -74,19 +63,15 @@ read_field()
   local field="$2"
 
   local defaultValue
-  if [ "$#" -ge 3 ]
-  then
+  if [ "$#" -ge 3 ]; then
     defaultValue="$3"
   fi
 
   local value
-  if ! value=$(jq --raw-output ".$field // empty" < "$varFile" 2>&1)
-  then
+  if ! value=$(jq --raw-output ".$field // empty" < "$varFile"); then
     fail "$value"
-  elif [ -z "$value" ]
-  then
-    if [ "${defaultValue:-}" ]
-    then
+  elif [ -z "$value" ]; then
+    if [ "${defaultValue:-}" ]; then
       value="$defaultValue"
     else
       fail "variable '$field' must be defined"
@@ -96,32 +81,31 @@ read_field()
   printf '%s' "$value"
 }
 
-
 fail()
 {
-  local msg="$*"
-
-  # shellcheck disable=SC2016
-  jq --compact-output --monochrome-output --null-input --arg msg "$msg" \
-     '{failed: true, msg: $msg}' \
-    >&2
-
-  exit 1
+  rc="1"
+  msg="$*"
 }
 
-
-succeed()
+endoutput()
 {
-  local changed="$1"
-
-  # shellcheck disable=SC2016
-  jq --compact-output --monochrome-output --null-input --arg changed "$changed" \
-     '{changed: ($changed == "true")}' \
-    >&2
-
-  exit 0
+  stderr="$(cat ${stderroutfile})"
+  jq -M -n \
+    --arg changed "$changed" \
+    --arg rc "$rc" \
+    --arg stdout "$stdout" \
+    --arg stderr "$stderr" \
+    --arg msg "$msg" \
+    '$ARGS.named'
+  exit ${rc}
 }
-
 
 set -e
-main "$@" 2>&1
+changed="false"
+rc=0
+stdout=""
+stderr=""
+msg=""
+stderroutfile="/tmp/stderr"
+trap 'rm -f ${tmpfstderr}' 0 1 2 3
+main "$@" 2> ${stderroutfile}

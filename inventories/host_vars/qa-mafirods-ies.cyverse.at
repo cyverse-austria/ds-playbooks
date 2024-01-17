@@ -1,0 +1,4 @@
+---
+irods_host_aliases:
+  - qa-mafirods-ies.cyverse.at
+  - 188.166.93.138

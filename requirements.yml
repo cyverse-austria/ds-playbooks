@@ -1,8 +1,5 @@
 ---
 collections:
-  - name: ansible.posix
-  - name: ansible.utils
-  - name: ansible.netcommon
   - name: community.docker
   - name: community.general
   - name: community.postgresql

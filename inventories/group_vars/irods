@@ -1,0 +1,52 @@
+---
+irods_amqp_host: "{{ groups['amqp'][0] }}"
+irods_amqp_vhost: /cyverse/data-store 
+irods_amqp_exchange: irods
+irods_amqp_user: "{{ amqp_username }}"
+irods_amqp_password: "{{ amqp_password }}"
+
+irods_clerver_user: "{{ irods_admin_username }}"
+irods_clerver_password: "{{ irods_admin_password }}"
+
+irods_db_user: "{{ dbms_username }}"
+irods_db_password: "{{ dbms_password }}"
+
+irods_dbms_pg_version: 12
+irods_dbms_pg_hba: /etc/postgresql/12/main/pg_hba.conf
+
+irods_default_number_of_transfer_threads: 16
+
+irods_negotiation_key: U9ZG2ogCJmzQCd3AkDfYDz8yudJs5SRM
+
+irods_resource_hierarchies:
+
+  - name: res01
+    type: passthru
+    context: "read=1.0;write=1.0"
+    children:
+      - tugraz01    # resource server 01
+    
+
+  - name: res02
+    context: "read=1.0;write=1.0"
+    children:
+      - tugraz02    # resource server 01
+
+  # - name: MedUni
+  #   type: passthru
+  #   context: "read=1.0;write=1.0"
+  #   children:
+  #     - name: medunigraz01
+  # - name: Uni-Graz
+  #   type: passthru
+  #   context: "read=1.0;write=1.0"
+  #   children:
+  #     - name: unigraz01
+
+irods_default_resource: "{{ irods_resource_hierarchies[0].name }}"
+
+irods_server_control_plane_key: LyQwgXt1F2aTM6jlv3dBOs887PNYm9kA
+
+irods_parallel_transfer_buffer_size: 32
+
+irods_zone_key: GcPmFQAzL0BsYNhyxNefIz0Kn2AofTuvhfB2mfi3

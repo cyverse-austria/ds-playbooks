@@ -1,0 +1,10 @@
+---
+irods_host_aliases:
+  - 188.166.97.223
+
+irods_storage_resources:
+  - name: tugraz02
+    vault: /irods_vault/tugraz02
+    context: minimum_free_space_for_create_in_bytes=16672118  # 10%
+
+irods_default_vault: "{{ irods_storage_resources[0].vault }}"

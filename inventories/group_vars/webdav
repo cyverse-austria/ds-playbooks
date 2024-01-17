@@ -1,0 +1,19 @@
+---
+ 
+webdav_auth_name: CyVerseAT # auth name
+
+webdav_cache_max_file_size: 128  # 128 MiB
+webdav_cache_size: 4090         # 32768 - 3 GiB
+webdav_cache_max_ttl: 2592000
+webdav_cache_ttl_fraction: 0.5
+
+webdav_max_request_workers: 4
+
+webdav_server_limit: 1
+
+webdav_tls_cert_file: /etc/letsencrypt/live/irods-webdav.cyverse.at/cert.pem
+webdav_tls_key_file: /etc/letsencrypt/live/irods-webdav.cyverse.at/privkey.pem
+webdav_tls_chain_file: /etc/letsencrypt/live/irods-webdav.cyverse.at/chain.pem
+
+webdav_purgeman_irods_user: "{{ irods_admin_username }}"
+webdav_purgeman_irods_password: "{{ irods_admin_password }}"

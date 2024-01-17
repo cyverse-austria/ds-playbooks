@@ -51,6 +51,8 @@ _irods_dbms_port: "{{ irods_dbms_port | default(5432) }}"
 _irods_default_dir_mode: "{{ irods_default_dir_mode | default('0750') }}"
 _irods_default_file_mode: "{{ irods_default_file_mode | default('0600') }}"
 _irods_default_number_of_transfer_threads: "{{ irods_default_number_of_transfer_threads | d(3) }}"
+_irods_maximum_size_for_single_buffer_in_megabytes: "{{ irods_maximum_size_for_single_buffer_in_megabytes | default(8)}}"
+_irods_transfer_buffer_size_for_parallel_transfer_in_megabytes: "{{ irods_transfer_buffer_size_for_parallel_transfer_in_megabytes | default(4) }}"
 _irods_default_repl_resource: "{{ irods_default_repl_resource | default(_irods_default_resource) }}"
 _irods_default_resource: >-
   {{ irods_default_resource | default(_irods_resource_hierarchies[0].name) }}

@@ -132,18 +132,6 @@
             name: bsd-mailx
             state: present
 
-        - name: Ubuntu | add PostgreSQL repository key
-          ansible.builtin.apt_key:
-            url: https://www.postgresql.org/media/keys/ACCC4CF8.asc
-
-        - name: Ubuntu | install PostgreSQL repository
-          ansible.builtin.copy:
-            dest: /etc/apt/sources.list.d/pgdg.list
-            mode: u+rw
-            content: >
-              deb http://apt-archive.postgresql.org/pub/repos/apt/ {{ ansible_lsb.codename }}-pgdg
-              main
-
         - name: Ubuntu | install PostgreSQL 12 clients
           ansible.builtin.apt:
             update_cache: true
