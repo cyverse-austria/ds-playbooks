@@ -1,8 +1,9 @@
 ---
 ansible_port: 22
 
-domain_name: cyverse.at
-canonical_hostname: qa-mafirods-ies.{{ domain_name }}
+# domain_name: cyverse.at
+canonical_hostname: qa-mafirods-ies.cyverse.at
+# canonical_hostname: qa-mafirods-ies.{{ domain_name }}
 # canonical_hostname: irods-ies.{{ domain_name }}
 
 amqp_username: $AMQP_USER

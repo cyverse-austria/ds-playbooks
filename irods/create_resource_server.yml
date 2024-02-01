@@ -54,6 +54,22 @@
         admin_password: "{{ admin_password }}"
         zone: "{{ _irods_zone_name }}"
 
+    - name: Create group rodsadmin
+      delegate_to: localhost
+      become: false
+      irods_group:
+        group: rodsadmin
+        state: present
+        host: "{{ groups['irods_catalog'][0] }}"
+        port: "{{ _irods_zone_port }}"
+        admin_user: "{{ admin_user }}"
+        admin_password: "{{ admin_password }}"
+        zone: "{{ _irods_zone_name }}"
+        # name: "{{ _irods_clerver_user }}"
+        # type: rodsadmin
+        # password: "{{ _irods_clerver_password }}"
+        # host: "{{ groups['irods_catalog'][0] }}"
+
     - name: Ensure clerver user is in group rodsadmin
       delegate_to: localhost
       become: false

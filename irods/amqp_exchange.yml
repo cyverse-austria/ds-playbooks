@@ -1,10 +1,16 @@
 ---
 - name: Create AMQP exchange
-  hosts: irods_catalog
+  # hosts: irods_catalog
+  hosts: amqp
   become: true
   run_once: true
   gather_facts: false
   tasks:
+    - name: Install rabbitmq
+      ansible.builtin.apt:
+        name:
+          - rabbitmq-server
+        state: present
     - name: Create
       ansible.builtin.import_role:
         name: cyverse.rabbitmq_vhost
