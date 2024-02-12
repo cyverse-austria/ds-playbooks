@@ -67,10 +67,17 @@ fail()
   local msg="$*"
 
   # shellcheck disable=SC2016
+  stderr="$(cat ${stderrfile})"
+  stdout="$(cat ${stdoutfile})"
+  exec 1>&3
   jq --compact-output --monochrome-output --null-input --arg msg "$msg" \
-     '{failed: true, msg: $msg}' \
-    >&2
+    --arg stderr "${stderr}" \
+    --arg stdout "${stdout}" \
+    '$ARGS.named'
+    # >&2
+     # '{failed: true, msg: $msg}' \
 
+  exec 2>&4
   exit 1
 }
 
@@ -79,14 +86,34 @@ succeed()
 {
   local changed="$1"
 
+  stderr="$(cat ${stderrfile})"
+  stdout="$(cat ${stdoutfile})"
   # shellcheck disable=SC2016
+  exec 1>&3
   jq --compact-output --monochrome-output --null-input --arg changed "$changed" \
-     '{changed: ($changed == "true")}' \
-    >&2
+    --arg stderr "${stderr}" \
+    --arg stdout "${stdout}" \
+    '$ARGS.named'
+    # >&2
+     # '{changed: ($changed == "true")}' \
 
+  exec 2>&4
   exit 0
 }
 
 
 set -e
-main "$@" 2>&1
+changed="false"
+rc=0
+stdout=""
+stderr=""
+msg=""
+stderrfile="/tmp/stderr"
+stdoutfile="/tmp/stdout"
+trap 'exec 1>&3 2>&4' 0 1 2 3
+exec 3>&1 4>&2
+exec 1>${stdoutfile}
+exec 2>${stderrfile}
+# trap 'rm -f ${tmpfstderr}' 0 1 2 3
+# main "$@" 2>&1
+main "$@"
