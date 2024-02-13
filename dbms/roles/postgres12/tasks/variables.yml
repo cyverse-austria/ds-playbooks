@@ -5,4 +5,7 @@
     that:
       - postgres12_replication_user is defined
       - postgres12_replication_pass is defined
-  when: postgres12_upstream_node or postgres12_downstream_nodes|length > 0
+  when:
+    - postgres12_downstream_nodes is defined
+    - postgres12_upstream_node or
+      postgres12_downstream_nodes|length > 0

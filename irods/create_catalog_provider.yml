@@ -168,8 +168,11 @@
 
     - name: Authenticate clerver
       irods_clerver_auth:
-        provider: "{{ inventory_hostname }}"
-        password: "{{ _irods_clerver_password }}"
+        PASSWORD: "{{ _irods_clerver_password }}"
+        IRODS_HOST: "{{ inventory_hostname }}"
+        IRODS_PORT: "{{ _irods_zone_port }}"
+        IRODS_USER_NAME: "{{ irods_admin_username }}"
+        IRODS_ZONE_NAME: "{{ irods_zone_name }}"
 
 
 - name: Perform run-time configuration

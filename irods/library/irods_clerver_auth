@@ -1,48 +1,48 @@
 #!/bin/bash
 #
 # An ansible module for initializing the clerver connection to the catalog 
-# service providers.
+# service PROVIDERs.
 #
 # Module Name:
 #  irods_clerver_auth
 #
 # Required Variables:
-#  password  the password used by the clerver to connect
+#  PASSWORD  the PASSWORD used by the clerver to connect
 #
 # Optional Variables:
-#  provider  The FQDN of the iRODS server. If this isn't provided, it assumes 
+#  PROVIDER  The FQDN of the iRODS server. If this isn't provided, it assumes 
 #            the local host is the server.
 
 main()
 {
-  local varFile="$1"
+  local VARFILE="$1"
 
-  local provider
-  local password
-  . "$varFile"
+  local PASSWORD
+  local IRODS_HOST
+  local IRODS_PORT
+  local IRODS_USER_NAME
+  local IRODS_ZONE_NAME
+  . "${VARFILE}"
+  local TIME_OUT=20
 
-  require password
+  require PASSWORD IRODS_HOST IRODS_PORT IRODS_USER_NAME IRODS_ZONE_NAME
+  export PASSWORD IRODS_HOST IRODS_PORT IRODS_USER_NAME IRODS_ZONE_NAME
 
-  local authFile
-  authFile=$(iinit -l | sed --quiet 's/^NOTICE: irods_authentication_file - //p')
+  local AUTHFILE
+  AUTHFILE=$(timeout ${TIME_OUT} iinit -l | sed --quiet 's/^NOTICE: irods_authentication_file - //p')
 
-  if [ -z "$authFile" ]
+  if [ -z "${AUTHFILE}" ]
   then
-    authFile="$HOME"/.irods/.irodsA
+    AUTHFILE="${HOME}"/.irods/.irodsA
   fi
 
-  if [ -e "$authFile" ]
+  if [ -e "${AUTHFILE}" ]
   then
     succeed false
   fi
 
-  if [ -n "$provider" ]
-  then
-    export IRODS_HOST="$provider"
-  fi
-
   local errMsg
-  if ! errMsg=$(iinit "$password" 2>&1)
+  if ! errMsg=$(echo ${PASSWORD} | timeout ${TIME_OUT} iinit "$PASSWORD" 2>&1)
   then
     fail "$errMsg"
   fi
@@ -50,17 +50,16 @@ main()
   succeed true
 }
 
-
 require()
 {
-  local var="$1"
-
-  if [ -z "${!var}" ]
-  then
-    fail "variable '$var' must be defined"
-  fi
+  local VARS="${@}"
+  for VAR in ${VARS}; do
+    if [ -z "${!VAR}" ]
+    then
+      fail "variable '${VAR}' must be defined"
+    fi
+  done
 }
-
 
 fail()
 {
