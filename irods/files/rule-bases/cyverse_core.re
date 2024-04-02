@@ -18,7 +18,8 @@
 
 @include 'ipc-logic'
 @include 'ipc-repl'
-@include 'ipc-trash'
+# @include 'ipc-trash'
+@include 'at-logic'
 
 
 # SERVICE SPECIFIC RULES
@@ -29,18 +30,18 @@
 # the rule file and suffixed with the name of the rule hook that will call the
 # service's rule.
 
-@include 'avra'
-@include 'bisque'
-@include 'calliope'
-@include 'captcn'
-@include 'coge'
-@include 'de'
-@include 'mdrepo'
-@include 'pire'
-@include 'sciapps'
-@include 'sernec'
-@include 'sparcd'
-@include 'terraref'
+# @include 'avra'
+# @include 'bisque'
+# @include 'calliope'
+# @include 'captcn'
+# @include 'coge'
+# @include 'de'
+# @include 'mdrepo'
+# @include 'pire'
+# @include 'sciapps'
+# @include 'sernec'
+# @include 'sparcd'
+# @include 'terraref'
 
 
 #
@@ -73,44 +74,44 @@ _cyverse_core_acPostProcForCollCreate_exclusive {
 	if (*err < 0) {
 		writeLine('serverLog', *msg);
 	}
-	*err = errormsg(bisque_acPostProcForCollCreate, *msg);
-	if (*err < 0) {
-		writeLine('serverLog', *msg);
-	}
-	*err = errormsg(captcn_acPostProcForCollCreate, *msg);
-	if (*err < 0) {
-		writeLine('serverLog', *msg);
-	}
-	*err = errormsg(coge_acPostProcForCollCreate, *msg);
-	if (*err < 0) {
-		writeLine('serverLog', *msg);
-	}
-	*err = errormsg(sciapps_acPostProcForCollCreate, *msg);
-	if (*err < 0) {
-		writeLine('serverLog', *msg);
-	}
-	*err = errormsg(sernec_acPostProcForCollCreate, *msg);
-	if (*err < 0) {
-		writeLine('serverLog', *msg);
-	}
-	*err = errormsg(sparcd_acPostProcForCollCreate, *msg);
-	if (*err < 0) {
-		writeLine('serverLog', *msg);
-	}
+#	*err = errormsg(bisque_acPostProcForCollCreate, *msg);
+#	if (*err < 0) {
+#		writeLine('serverLog', *msg);
+#	}
+#	*err = errormsg(captcn_acPostProcForCollCreate, *msg);
+#	if (*err < 0) {
+#		writeLine('serverLog', *msg);
+#	}
+#	*err = errormsg(coge_acPostProcForCollCreate, *msg);
+#	if (*err < 0) {
+#		writeLine('serverLog', *msg);
+#	}
+#	*err = errormsg(sciapps_acPostProcForCollCreate, *msg);
+#	if (*err < 0) {
+#		writeLine('serverLog', *msg);
+#	}
+#	*err = errormsg(sernec_acPostProcForCollCreate, *msg);
+#	if (*err < 0) {
+#		writeLine('serverLog', *msg);
+#	}
+#	*err = errormsg(sparcd_acPostProcForCollCreate, *msg);
+#	if (*err < 0) {
+#		writeLine('serverLog', *msg);
+#	}
 }
 
 # This rule applies the project specific policies to a data object created
 # through copying another data object.
 #
 _cyverse_core_acPostProcForCopy_exclusive {
-	*err = errormsg(captcn_acPostProcForCopy, *msg);
-	if (*err < 0) {
-		writeLine('serverLog', *msg);
-	}
-	*err = errormsg(sernec_acPostProcForCopy, *msg);
-	if (*err < 0) {
-		writeLine('serverLog', *msg);
-	}
+#	*err = errormsg(captcn_acPostProcForCopy, *msg);
+#	if (*err < 0) {
+#		writeLine('serverLog', *msg);
+#	}
+#	*err = errormsg(sernec_acPostProcForCopy, *msg);
+#	if (*err < 0) {
+#		writeLine('serverLog', *msg);
+#	}
 }
 
 
@@ -151,7 +152,7 @@ acCreateUser {
 # This rule applies the project specific data delete policies.
 #
 acDataDeletePolicy {
-	bisque_acDataDeletePolicy;
+#	bisque_acDataDeletePolicy;
 	ipc_acDataDeletePolicy;
 }
 
@@ -337,7 +338,7 @@ acPreProcForModifyAVUMetadata(
 #                after it is moved
 #
 acPreProcForObjRename(*SourceObject, *DestObject) {
-	de_acPreProcForObjRename(*SourceObject, *DestObject);
+#	de_acPreProcForObjRename(*SourceObject, *DestObject);
 }
 
 # This rule sets the preprocessing policy for deleting a collection.
@@ -388,10 +389,10 @@ acPostProcForDelete {
 	if (*err < 0) {
 		writeLine('serverLog', *msg);
 	}
-	*err = errormsg(bisque_acPostProcForDelete, *msg);
-	if (*err < 0) {
-		writeLine('serverLog', *msg);
-	}
+#	*err = errormsg(bisque_acPostProcForDelete, *msg);
+#	if (*err < 0) {
+#		writeLine('serverLog', *msg);
+#	}
 }
 
 # This rule sets the post-processing policy for an ACL change.
@@ -500,26 +501,26 @@ acPostProcForObjRename(*SourceObject, *DestObject) {
 	if (*err < 0) {
 		writeLine('serverLog', *msg);
 	}
-	*err = errormsg(bisque_acPostProcForObjRename(*SourceObject, *DestObject), *msg);
-	if (*err < 0) {
-		writeLine('serverLog', *msg);
-	}
-	*err = errormsg(captcn_acPostProcForObjRename(*SourceObject, *DestObject), *msg);
-	if (*err < 0) {
-		writeLine('serverLog', *msg);
-	}
-	*err = errormsg(coge_acPostProcForObjRename(*SourceObject, *DestObject), *msg);
-	if (*err < 0) {
-		writeLine('serverLog', *msg);
-	}
-	*err = errormsg(sciapps_acPostProcForObjRename(*SourceObject, *DestObject), *msg);
-	if (*err < 0) {
-		writeLine('serverLog', *msg);
-	}
-	*err = errormsg(sernec_acPostProcForObjRename(*SourceObject, *DestObject), *msg);
-	if (*err < 0) {
-		writeLine('serverLog', *msg);
-	}
+#	*err = errormsg(bisque_acPostProcForObjRename(*SourceObject, *DestObject), *msg);
+#	if (*err < 0) {
+#		writeLine('serverLog', *msg);
+#	}
+#	*err = errormsg(captcn_acPostProcForObjRename(*SourceObject, *DestObject), *msg);
+#	if (*err < 0) {
+#		writeLine('serverLog', *msg);
+#	}
+#	*err = errormsg(coge_acPostProcForObjRename(*SourceObject, *DestObject), *msg);
+#	if (*err < 0) {
+#		writeLine('serverLog', *msg);
+#	}
+#	*err = errormsg(sciapps_acPostProcForObjRename(*SourceObject, *DestObject), *msg);
+#	if (*err < 0) {
+#		writeLine('serverLog', *msg);
+#	}
+#	*err = errormsg(sernec_acPostProcForObjRename(*SourceObject, *DestObject), *msg);
+#	if (*err < 0) {
+#		writeLine('serverLog', *msg);
+#	}
 	*err = errormsg(replEntityRename(*SourceObject, *DestObject), *msg);
 	if (*err < 0) {
 		writeLine('serverLog', *msg);
@@ -574,7 +575,7 @@ acPostProcForRmColl {
 #  CollCreateInp  (`KeyValuePair_PI`) information related to the new collection
 #
 pep_api_coll_create_post(*Instance, *Comm, *CollCreateInp) {
-	ipcTrash_api_coll_create_post(*Instance, *Comm, *CollCreateInp);
+	# ipcTrash_api_coll_create_post(*Instance, *Comm, *CollCreateInp);
 }
 
 
@@ -589,7 +590,7 @@ pep_api_coll_create_post(*Instance, *Comm, *CollCreateInp) {
 #  TransStat       unknown
 #
 pep_api_data_obj_copy_post(*Instance, *Comm, *DataObjCopyInp, *TransStat) {
-	ipcTrash_api_data_obj_copy_post(*Instance, *Comm, *DataObjCopyInp, *TransStat);
+	# ipcTrash_api_data_obj_copy_post(*Instance, *Comm, *DataObjCopyInp, *TransStat);
 }
 
 
@@ -604,7 +605,7 @@ pep_api_data_obj_copy_post(*Instance, *Comm, *DataObjCopyInp, *TransStat) {
 #              object
 #
 pep_api_data_obj_create_post(*Instance, *Comm, *DataObjInp) {
-	ipcTrash_api_data_obj_create_post(*Instance, *Comm, *DataObjInp);
+	# ipcTrash_api_data_obj_create_post(*Instance, *Comm, *DataObjInp);
 }
 
 
@@ -618,7 +619,7 @@ pep_api_data_obj_create_post(*Instance, *Comm, *DataObjInp) {
 #  DataObjInp  (`KeyValuePair_PI`) information related to the data object
 #
 pep_api_data_obj_open_pre(*Instance, *Comm, *DataObjInp) {
-	mdrepo_api_data_obj_open_pre(*Instance, *Comm, *DataObjInp);
+#	mdrepo_api_data_obj_open_pre(*Instance, *Comm, *DataObjInp);
 }
 
 
@@ -634,7 +635,7 @@ pep_api_data_obj_open_pre(*Instance, *Comm, *DataObjInp) {
 #  PORTAL_OPR_OUT  unknown
 #
 pep_api_data_obj_put_pre(*Instance, *Comm, *DataObjInp, *DataObjInpBBuf, *PORTAL_OPR_OUT) {
-	mdrepo_api_data_obj_put_pre(*Instance, *Comm, *DataObjInp, *DataObjInpBBuf, *PORTAL_OPR_OUT);
+#	mdrepo_api_data_obj_put_pre(*Instance, *Comm, *DataObjInp, *DataObjInpBBuf, *PORTAL_OPR_OUT);
 }
 
 # This is the post processing logic for when a data object is uploaded through
@@ -647,7 +648,7 @@ pep_api_data_obj_put_pre(*Instance, *Comm, *DataObjInp, *DataObjInpBBuf, *PORTAL
 #  PORTAL_OPR_OUT  unknown
 #
 pep_api_data_obj_put_post(*Instance, *Comm, *DataObjInp, *DataObjInpBBuf, *PORTAL_OPR_OUT) {
-	ipcTrash_api_data_obj_put_post(*Instance, *Comm, *DataObjInp, *DataObjInpBBuf, *PORTAL_OPR_OUT);
+	# ipcTrash_api_data_obj_put_post(*Instance, *Comm, *DataObjInp, *DataObjInpBBuf, *PORTAL_OPR_OUT);
 }
 
 
@@ -662,7 +663,7 @@ pep_api_data_obj_put_post(*Instance, *Comm, *DataObjInp, *DataObjInpBBuf, *PORTA
 #                    its new path
 #
 pep_api_data_obj_rename_pre(*Instance, *Comm, *DataObjRenameInp) {
-	ipcTrash_api_data_obj_rename_pre(*Instance, *Comm, *DataObjRenameInp);
+	# ipcTrash_api_data_obj_rename_pre(*Instance, *Comm, *DataObjRenameInp);
 }
 
 # This is the post processing logic for when a data object is renamed through
@@ -674,7 +675,7 @@ pep_api_data_obj_rename_pre(*Instance, *Comm, *DataObjRenameInp) {
 #                    its old path
 #
 pep_api_data_obj_rename_post(*Instance, *Comm, *DataObjRenameInp) {
-	ipcTrash_api_data_obj_rename_post(*Instance, *Comm, *DataObjRenameInp);
+	# ipcTrash_api_data_obj_rename_post(*Instance, *Comm, *DataObjRenameInp);
 }
 
 
@@ -689,7 +690,7 @@ pep_api_data_obj_rename_post(*Instance, *Comm, *DataObjRenameInp) {
 #                    deleted
 #
 pep_api_data_obj_unlink_pre(*Instance, *Comm, *DataObjUnlinkInp) {
-	ipcTrash_api_data_obj_unlink_pre(*Instance, *Comm, *DataObjUnlinkInp);
+	# ipcTrash_api_data_obj_unlink_pre(*Instance, *Comm, *DataObjUnlinkInp);
 }
 
 # This is the post processing logic for when a data object is deleted through
@@ -701,7 +702,7 @@ pep_api_data_obj_unlink_pre(*Instance, *Comm, *DataObjUnlinkInp) {
 #                    deleted
 #
 pep_api_data_obj_unlink_post(*Instance, *Comm, *DataObjUnlinkInp) {
-	ipcTrash_api_data_obj_unlink_post(*Instance, *Comm, *DataObjUnlinkInp);
+	# ipcTrash_api_data_obj_unlink_post(*Instance, *Comm, *DataObjUnlinkInp);
 }
 
 # This is the exception logic for when an API DATA_OBJ_UNLINK request fails.
@@ -712,7 +713,7 @@ pep_api_data_obj_unlink_post(*Instance, *Comm, *DataObjUnlinkInp) {
 #                    deleted
 #
 pep_api_data_obj_unlink_except(*Instance, *Comm, *DataObjUnlinkInp) {
-	ipcTrash_api_data_obj_unlink_except(*Instance, *Comm, *DataObjUnlinkInp);
+	# ipcTrash_api_data_obj_unlink_except(*Instance, *Comm, *DataObjUnlinkInp);
 }
 
 
@@ -728,7 +729,7 @@ pep_api_data_obj_unlink_except(*Instance, *Comm, *DataObjUnlinkInp) {
 #  CollOprStat  unknown
 #
 pep_api_rm_coll_pre(*Instance, *Comm, *RmCollInp, *CollOprStat) {
-	ipcTrash_api_rm_coll_pre(*Instance, *Comm, *RmCollInp, *CollOprStat);
+	# ipcTrash_api_rm_coll_pre(*Instance, *Comm, *RmCollInp, *CollOprStat);
 }
 
 # This is the exception logic for when an API RM_COLL request fails.
@@ -740,7 +741,7 @@ pep_api_rm_coll_pre(*Instance, *Comm, *RmCollInp, *CollOprStat) {
 #  CollOprStat  unknown
 #
 pep_api_rm_coll_except(*Instance, *Comm, *RmCollInp, *CollOprStat) {
-	ipcTrash_api_rm_coll_except(*Instance, *Comm, *RmCollInp, *CollOprStat);
+	# ipcTrash_api_rm_coll_except(*Instance, *Comm, *RmCollInp, *CollOprStat);
 }
 
 
@@ -819,10 +820,10 @@ _cyverse_core_dataObjCreated(*User, *Zone, *DataObjInfo, *Step) {
 			writeLine('serverLog', *msg);
 		}
 		if (*Step != 'START') {
-			*err = errormsg(de_dataObjCreated(*User, *Zone, *DataObjInfo), *msg);
-			if (*err < 0) {
-				writeLine('serverLog', *msg);
-			}
+#			*err = errormsg(de_dataObjCreated(*User, *Zone, *DataObjInfo), *msg);
+#			if (*err < 0) {
+#				writeLine('serverLog', *msg);
+#			}
 		}
 	} else {
 		*err = errormsg(ipc_dataObjCreated_default(*User, *Zone, *DataObjInfo, *Step), *msg);
@@ -830,28 +831,28 @@ _cyverse_core_dataObjCreated(*User, *Zone, *DataObjInfo, *Step) {
 			writeLine('serverLog', *msg);
 		}
 		if (*Step != 'FINISH') {
-			*err = errormsg(bisque_dataObjCreated(*User, *Zone, *DataObjInfo), *msg);
-			if (*err < 0) {
-				writeLine('serverLog', *msg);
-			}
-			*err = errormsg(coge_dataObjCreated(*User, *Zone, *DataObjInfo), *msg);
-			if (*err < 0) {
-				writeLine('serverLog', *msg);
-			}
-			*err = errormsg(sciapps_dataObjCreated(*User, *Zone, *DataObjInfo), *msg);
-			if (*err < 0) {
-				writeLine('serverLog', *msg);
-			}
+#			*err = errormsg(bisque_dataObjCreated(*User, *Zone, *DataObjInfo), *msg);
+#			if (*err < 0) {
+#				writeLine('serverLog', *msg);
+#			}
+#			*err = errormsg(coge_dataObjCreated(*User, *Zone, *DataObjInfo), *msg);
+#			if (*err < 0) {
+#				writeLine('serverLog', *msg);
+#			}
+#			*err = errormsg(sciapps_dataObjCreated(*User, *Zone, *DataObjInfo), *msg);
+#			if (*err < 0) {
+#				writeLine('serverLog', *msg);
+#			}
 		}
 		if (*Step != 'START') {
-			*err = errormsg(calliope_dataObjCreated(*User, *Zone, *DataObjInfo), *msg);
-			if (*err < 0) {
-				writeLine('serverLog', *msg);
-			}
-			*err = errormsg(sparcd_dataObjCreated(*User, *Zone, *DataObjInfo), *msg);
-			if (*err < 0) {
-				writeLine('serverLog', *msg);
-			}
+#			*err = errormsg(calliope_dataObjCreated(*User, *Zone, *DataObjInfo), *msg);
+#			if (*err < 0) {
+#				writeLine('serverLog', *msg);
+#			}
+#			*err = errormsg(sparcd_dataObjCreated(*User, *Zone, *DataObjInfo), *msg);
+#			if (*err < 0) {
+#				writeLine('serverLog', *msg);
+#			}
 			*err = errormsg(ipcRepl_dataObjCreated(*User, *Zone, *DataObjInfo), *msg);
 			if (*err < 0) {
 				writeLine('serverLog', *msg);
@@ -1051,8 +1052,8 @@ pep_database_mod_data_obj_meta_post(*Instance, *Context, *OUT, *DataObjInfo, *Re
 pep_database_mod_ticket_post(
 	*Instance, *Context, *OUT, *OpName, *TicketString, *Arg3, *Arg4, *Arg5
 ) {
-	mdrepo_database_mod_ticket_post(
-		*Instance, *Context, *OUT, *OpName, *TicketString, *Arg3, *Arg4, *Arg5 );
+#	mdrepo_database_mod_ticket_post(
+#		*Instance, *Context, *OUT, *OpName, *TicketString, *Arg3, *Arg4, *Arg5 );
 }
 
 

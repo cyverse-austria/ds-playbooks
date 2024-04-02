@@ -1,9 +1,0 @@
----
-offline: true
-
-kinds:
-  - playbook: "irods/*.yml"
-  - playbook: "irods/library/tests/*.yml"
-
-skip_list:
-  - yaml

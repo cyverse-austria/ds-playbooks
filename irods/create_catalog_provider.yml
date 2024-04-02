@@ -60,10 +60,10 @@
         name: parallel
         state: present
 
-    - name: Ensure pika installed
-      ansible.builtin.pip:
-        name: pika<1.2
-        state: present
+    # - name: Ensure pika installed
+    #   ansible.builtin.pip:
+    #     name: pika<1.2
+    #     state: present
 
     - name: Provision CentOS
       when: ansible_distribution == 'CentOS'

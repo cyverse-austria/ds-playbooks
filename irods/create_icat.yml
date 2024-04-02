@@ -5,6 +5,9 @@
   become: true
   gather_facts: false
   tasks:
+    - name: DEBUG01
+      ansible.builtin.debug:
+        var: _irods_db_password
     - name: create DB on primary DBMS
       import_role:
         name: postgresql_db

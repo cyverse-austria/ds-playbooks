@@ -252,7 +252,7 @@ _ipc_resolve_msg_entity_id(*EntityType, *EntityName, *ClientName, *ClientZone) =
 	let *id = '' in
 	let *_ =
 		if ipc_isFileSystemType(*EntityType)
-		then _ipc_ensureUUID(*EntityType, *EntityName, *id, *ClientName, *ClientZone)
+		then _ipc_ensureUUID(*EntityType, *EntityName, *id)
 		else *id = *EntityName in
 	*id
 
@@ -603,9 +603,9 @@ ipc_acSetNumThreads { msiSetNumThreads('default', 'default', 'default'); }
 # Set maximum number of rule engine processes
 ipc_acSetReServerNumProc { msiSetReServerNumProc(str(cyverse_MAX_NUM_RE_PROCS)); }
 
-# This rule sets the rodsadmin group permission of a collection when a
-# collection is created by an administrative means, i.e. iadmin mkuser. It also
-# pushes a collection.add message into the irods exchange.
+# This rule sets the rodsadmin group permission of a collection when a collection
+# is created by an administrative means, i.e. iadmin mkuser. It also pushes a
+# collection.add message into the irods exchange.
 ipc_acCreateCollByAdmin(*ParColl, *ChildColl) {
 	*coll = '*ParColl/*ChildColl';
 	*perm = resolveAdminPerm(*coll);

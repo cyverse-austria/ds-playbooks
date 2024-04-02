@@ -1,0 +1,18 @@
+---
+ansible_port: 22
+domain_name: cyverse.at
+canonical_hostname: qa-mafirods-ies.cyverse.at
+# canonical_hostname: qa-mafirods-ies.{{ domain_name }}
+# canonical_hostname: irods-ies.{{ domain_name }}
+amqp_username: cyverse
+amqp_password: cyverse.at
+# dbms_password: JkhUjqFWB2MYKtjx
+dbms_password: rods
+dbms_username: irods
+de_job_irods_user: de_job
+irods_admin_username: rods
+# irods_admin_password: W5PHqYCd94Ymz69H
+irods_admin_password: rods
+irods_version: 4.2.8
+irods_zone_name: TUG
+_irods_db_user: "{{ irods_db_user | default('irods') }}"

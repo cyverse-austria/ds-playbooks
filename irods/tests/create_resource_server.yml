@@ -3,7 +3,7 @@
   ansible.builtin.import_playbook: provision.yml
 
 
-- name: Test ensure irods owns what it is supposed to
+- name: Test resource server specific provisioning
   hosts: irods_resource:!unmanaged_systems
   become: true
   tasks:
@@ -12,8 +12,7 @@
 
     - name: Test ensure NetCDF plugs not installed
       ansible.builtin.assert:
-        that:
-          - not "{{ item }}" in ansible_facts.packages
+        that: item not in ansible_facts.packages
       with_items:
         - irods-netcdf-client_modules
         - irods-netcdf-icommands
@@ -24,7 +23,7 @@
       vars:
         dir: /etc/irods
 
-    - name: Testi iRODS ownership of /var/lib/irods
+    - name: Test iRODS ownership of /var/lib/irods
       ansible.builtin.include_tasks: tasks/test_irods_ownership.yml
       vars:
         dir: /var/lib/irods

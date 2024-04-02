@@ -1,3 +1,0 @@
-*.retry
-.vscode
-**/.mypy_cache

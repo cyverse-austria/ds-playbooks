@@ -1,127 +1,87 @@
 #!/bin/bash
+# -*- coding: utf-8 -*- ## only needed for python modules
 #
-# An ansible module for managing iRODS user types. At the moment, it can only
+# An ansible module for managing iRODS user TYPEs. At the moment, it can only
 # create them.
 #
 # Module Name:
-#  irods_user_type
+#  irods_user_TYPE
 #
 # Required Variables:
-#  type  the type of user to create
+#  TYPE  the TYPE of user to create
 #
 # Optional Variables:
-#  description  the description of the user type
+#  DESCRIPTION  the DESCRIPTION of the user TYPE
 
 # WANT_JSON
 
-
 main()
 {
-  local varFile="$1"
-
-  local type
-  local description
-
-  type=$(read_field "$varFile" type)
-  description=$(read_field "$varFile" description '')
-
-  local id
-  id=$(quest "select TOKEN_ID where TOKEN_NAMESPACE = 'user_type' and TOKEN_NAME = '$type'")
-
-  if [ -z "$id" ]
-  then
-    local errMsg
-    if ! errMsg=$(iadmin at user_type "$type" '' "$description" 2>&1)
-    then
-      fail "$errMsg"
+  local VARFILE="$1"
+  local TYPE=$(cat ${VARFILE} | jq -r ".type")
+  local DESCRIPTION=$(cat ${VARFILE} | jq -r ".description")
+  RUN_USER=$(cat ${VARFILE} | jq -r ".runas")
+  
+  local ID=$(question "select TOKEN_ID where TOKEN_NAMESPACE = 'user_type' and TOKEN_NAME = '${TYPE}'")
+  if [ -z ${ID} ]; then
+    local ERR_MSG
+    if ! ERR_MSG=$(sudo -u ${RUN_USER} iadmin at user_type "${TYPE}" "" "${DESCRIPTION}" ); then
+      fail "${ERR_MSG}"
     fi
-
-    succeed true
-  fi
-
-  local currentDesc
-  currentDesc=$(quest "select TOKEN_VALUE2 where TOKEN_ID = '$id'")
-
-  if [ "$description" != "$currentDesc" ]
-  then
-    fail "user type $type already in use for another purpose"
-  fi
-
-  succeed false
-}
-
-
-quest()
-{
-  local query="$*"
-
-  local response
-  if ! response=$(iquest --no-page '%s' "$query" 2>&1)
-  then
-    fail "$response"
-  fi
-
-  if ! [[ "$response" =~ ^CAT_NO_ROWS_FOUND ]]
-  then
-    printf '%s' "$response"
-  fi
-}
-
-
-read_field()
-{
-  local varFile="$1"
-  local field="$2"
-
-  local defaultValue
-  if [ "$#" -ge 3 ]
-  then
-    defaultValue="$3"
-  fi
-
-  local value
-  if ! value=$(jq --raw-output ".$field // empty" < "$varFile" 2>&1)
-  then
-    fail "$value"
-  elif [ -z "$value" ]
-  then
-    if [ "${defaultValue:-}" ]
-    then
-      value="$defaultValue"
-    else
-      fail "variable '$field' must be defined"
+    changed="true"
+  else
+    local CUR_DESCRIPTION
+    CUR_DESCRIPTION=$(question "select TOKEN_VALUE2 where TOKEN_ID = '${ID}'")
+    if [ "${DESCRIPTION}" != "${CUR_DESCRIPTION}" ]; then
+      fail "user type ${TYPE} already in use for another purpose"
     fi
   fi
-
-  printf '%s' "$value"
+  endoutput
+}
+#
+question()
+{
+  local RESPONSE=$(sudo -u ${RUN_USER} iquest --no-page '%s' "${*}")
+  if [ -z "${RESPONSE}" ]; then
+    fail "${RESPONSE}"
+  elif ! [[ "${RESPONSE}" =~ ^CAT_NO_ROWS_FOUND ]]; then
+    printf '%s' "${RESPONSE}"
+  elif [[ "${RESPONSE}" =~ ^CAT_NO_ROWS_FOUND ]]; then
+    echo ""
+  fi
 }
 
-
+#
 fail()
 {
-  local msg="$*"
-
-  # shellcheck disable=SC2016
-  jq --compact-output --monochrome-output --null-input --arg msg "$msg" \
-     '{failed: true, msg: $msg}' \
-    >&2
-
-  exit 1
+  rc="1"
+  msg="$*"
 }
-
-
-succeed()
+#
+endoutput()
 {
-  local changed="$1"
-
-  # shellcheck disable=SC2016
-  jq --compact-output --monochrome-output --null-input --arg changed "$changed" \
-     '{changed: ($changed == "true")}' \
-    >&2
-
-  exit 0
+  # restoring stdout and stderr
+  exec 1>&3 2>&4
+  stderr="$(cat ${STDERRFILE})"
+  stdout="$(cat ${STDOUTFILE})"
+  jq -M -n \
+    --argjson changed "$changed" \
+    --argjson rc "$rc" \
+    --arg stderr "$stderr" \
+    --arg stdout "$stdout" \
+    --arg msg "$msg" \
+    '$ARGS.named'
+  exit ${rc}
 }
-
-
+#
 set -e
-main "$@" 2>&1
+changed="false"
+rc=0
+stdout=""
+stderr=""
+msg=""
+STDOUTFILE=/tmp/XXX
+STDERRFILE=/tmp/YYY
+exec 4>&2 3>&1 2>${STDERRFILE} 1>${STDOUTFILE}
+trap 'rm -f ${STDERRFILE} ${STDOUTFILE}' 0 1 2 3
+main "$@"

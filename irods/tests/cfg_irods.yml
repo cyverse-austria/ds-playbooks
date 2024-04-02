@@ -17,14 +17,16 @@
         or response.stat.pw_name != 'irods'
         or not response.stat.rusr
       with_items:
-        - avra.re
-        - avra-env.re
-        - bisque.re
-        - bisque-env.re
-        - calliope.re
-        - captcn.re
-        - captcn-env.re
-        - coge.re
+        - at-env.re
+        - at-logic.re
+        # - avra.re
+        # - avra-env.re
+        # - bisque.re
+        # - bisque-env.re
+        # - calliope.re
+        # - captcn.re
+        # - captcn-env.re
+        # - coge.re
         - core.dvm
         - core.fnm
         - core.re
@@ -32,21 +34,21 @@
         - cyverse_core.re
         - cyverse_housekeeping.re
         - cyverse_json.re
-        - de.re
+        # - de.re
         - host_access_control_config.json
         - hosts_config.json
         - ipc-logic.re
-        - ipc-trash.re
-        - mdrepo.re
-        - mdrepo-env.re
-        - pire.re
-        - pire-env.re
-        - sernec.re
-        - sernec-env.re
+        # - ipc-trash.re
+        # - mdrepo.re
+        # - mdrepo-env.re
+        # - pire.re
+        # - pire-env.re
+        # - sernec.re
+        # - sernec-env.re
         - server_config.json
         - service_account.config
-        - terraref.re
-        - terraref-env.re
+        # - terraref.re
+        # - terraref-env.re
 
     - name: Verify irods_environment.json is in place
       ansible.builtin.stat:
@@ -64,10 +66,13 @@
         or not response.stat.xusr
       with_items:
         - amqptopicsend.py
-        - calliope-ingest
+        - at-mv-coll
+        - at-switch-own
+        # - calliope-ingest
         - correct-size
-        - de-archive-data
-        - de-create-collection
+        # - correct-size
+        # - de-archive-data
+        # - de-create-collection
         - delete-scheduled-rule
         - generateuuid
         - imeta-exec

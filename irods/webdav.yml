@@ -90,21 +90,21 @@
               </LocationMatch>
             comment: The WebDAV host
             locations:
-              - path: /dav/{{ _irods_zone_name }}/commons/community_released
-                comment: Anonymous read-only access to the community released data
-                extra_parameters: |
-                  {% from 'davrods.j2' import davrods with context %}
-                  RedirectPermanent \
-                    /dav/{{ _irods_zone_name }}/commons/community_released/commons_repo/curated \
-                    /dav/{{ _irods_zone_name }}/commons/cyverse_curated
-
-                  {{ davrods('/' ~ _irods_zone_name ~ '/home/shared', 'community-head.html') }}
-              - path: /dav/{{ _irods_zone_name }}/commons/cyverse_curated
-                comment: Anonymous read-only access to the data curated by CyVerse
-                extra_parameters: |
-                  {% from 'davrods.j2' import davrods with context %}
-                  {{ davrods('/' ~ _irods_zone_name ~ '/home/shared/commons_repo/curated',
-                             'curated-head.html') }}
+#               - path: /dav/{{ _irods_zone_name }}/commons/community_released
+#                 comment: Anonymous read-only access to the community released data
+#                 extra_parameters: |
+#                   {% from 'davrods.j2' import davrods with context %}
+#                   RedirectPermanent \
+#                     /dav/{{ _irods_zone_name }}/commons/community_released/commons_repo/curated \
+#                     /dav/{{ _irods_zone_name }}/commons/cyverse_curated
+#
+#                   {{ davrods('/' ~ _irods_zone_name ~ '/home/shared', 'community-head.html') }}
+#               - path: /dav/{{ _irods_zone_name }}/commons/cyverse_curated
+#                 comment: Anonymous read-only access to the data curated by CyVerse
+#                 extra_parameters: |
+#                   {% from 'davrods.j2' import davrods with context %}
+#                   {{ davrods('/' ~ _irods_zone_name ~ '/home/shared/commons_repo/curated',
+#                              'curated-head.html') }}
               - path: /dav/{{ _irods_zone_name }}/home
                 comment: Authenticated read-write access to the home collection
                 extra_parameters: |
@@ -343,10 +343,10 @@
           base: home
         - file: projects-head.html
           base: projects
-        - file: community-head.html
-          base: commons/community_released
-        - file: curated-head.html
-          base: commons/cyverse_curated
+ #       - file: community-head.html
+ #         base: commons/community_released
+ #       - file: curated-head.html
+ #         base: commons/cyverse_curated
 
     - name: Install static WebDAV HTML pages for dav/
       ansible.builtin.include_tasks: tasks/install_webdav_html.yml
@@ -577,7 +577,6 @@
           community.general.make:
             chdir: /tmp/purgeman_setup
             target: install_centos
-          tags: skip_ansible_lint
 
         - name: Purgeman | delete build dir for purgeman package
           ansible.builtin.file:
@@ -608,26 +607,26 @@
         src: /usr/lib/systemd/system/purgeman.service
         state: link
 
-    - name: Open HTTP connection in firewall
-      ansible.builtin.blockinfile:
-        path: /etc/sysconfig/iptables
-        insertbefore: -A INPUT -j REJECT
-        marker: "# {mark} DS MANAGED BLOCK (webdav)"
-        content: |
-          {% for i in _webdav_allowed_src %}
-          -A INPUT -m state --state NEW -p tcp -s {{ i }} --dport 80 -j ACCEPT
-          -A INPUT -m state --state NEW -p tcp -s {{ i }} --dport 443 -j ACCEPT
-          {% endfor %}
-      tags:
-        - firewall
-      notify: Reload firewall
+    # - name: Open HTTP connection in firewall
+    #   ansible.builtin.blockinfile:
+    #     path: /etc/sysconfig/iptables
+    #     insertbefore: -A INPUT -j REJECT
+    #     marker: "# {mark} DS MANAGED BLOCK (webdav)"
+    #     content: |
+    #       {% for i in _webdav_allowed_src %}
+    #       -A INPUT -m state --state NEW -p tcp -s {{ i }} --dport 80 -j ACCEPT
+    #       -A INPUT -m state --state NEW -p tcp -s {{ i }} --dport 443 -j ACCEPT
+    #       {% endfor %}
+    #   tags:
+    #     - firewall
+    #   notify: Reload firewall
 
   handlers:
-    - name: Reload firewall
-      when: notifications_enabled | d(false)
-      ansible.builtin.service:
-        name: iptables
-        state: restarted
+    # - name: Reload firewall
+    #   when: notifications_enabled | d(false)
+    #   ansible.builtin.service:
+    #     name: iptables
+    #     state: restarted
 
     - name: Reload systemd
       when: notifications_enabled | d(false)

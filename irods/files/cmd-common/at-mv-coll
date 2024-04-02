@@ -1,0 +1,37 @@
+#!/bin/bash
+#
+# This script moves a collection. The caller must be a rodsadmin user.
+#
+# USAGE:
+#  at-mv-coll SRC-COLL DEST-COLL
+#
+# PARAMETERS:
+#  SRC-COLL   the absolute path to the collection to move
+#  DEST-COLL  The absolute path of the moved collection
+#
+# NOTE:
+# This script is a workaround for https://github.com/irods/irods/issues/4597.
+# This issue still occurs in iRODS 4.2.6.
+
+set -o nounset -o pipefail
+
+
+main()
+{
+  if [[ "$#" -lt 2 ]]
+  then
+    local execName
+    execName=$(basename "$0")
+
+    printf 'USAGE: %s SRC-COLL DEST-COLL\n' "$execName" >&2
+    return 1
+  fi
+
+  local srcColl="$1"
+  local destColl="$2"
+
+  imv "$srcColl" "$destColl"
+}
+
+
+main "$@"

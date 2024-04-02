@@ -7,10 +7,10 @@ USER root
 RUN yum --assumeyes install uuidd && \
 ### Install support for periphery script
     yum --assumeyes install moreutils && \
-### Clean up installation artifacts
+    ### Clean up installation artifacts
     yum --assumeyes clean all && \
     rm --force --recursive /var/cache/yum && \
-### Create vault base
+    ### Create vault base
     mkdir /irods_vault
 
 ### Install cmd scripts and config files
@@ -44,7 +44,7 @@ ONBUILD ARG IRODS_RES_SERVER
 ONBUILD ARG IRODS_STORAGE_RES
 
 ONBUILD RUN /on-build-instantiate && \
-            rm --force /on-build-instantiate
+    rm --force /on-build-instantiate
 
 ONBUILD USER irods-host-user
 ONBUILD ENV HOME=/var/lib/irods

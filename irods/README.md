@@ -2,9 +2,11 @@
 
 This is a collection of playbooks for deploying iRODS for the CyVerse Data Store.
 
+## Requirements
+On localhost (the one ansible is running on) the package `python3-irodsclient` has to be installed.
+
 ## Tags
 
-* `firewall` for tasks related to firewall configuration
 * `no_testing` for tasks that shouldn't be run within the containerized testing environment
 * `non_idempotent` for tasks that aren't idempotent
 
@@ -12,29 +14,14 @@ This is a collection of playbooks for deploying iRODS for the CyVerse Data Store
 
 Variable                                   | Required | Default                              | Choices | Comments
 ------------------------------------------ | -------- | ------------------------------------ | ------- | --------
-`avra_base_collection`                     | no       |                                      |         | The base collection for the Avra project. If it isn't present no Avra rules will fire.
-`avra_manager`                             | no       | `irods_clerver_user`                 |         | The iRODS user who is responsible for Avra data.
-`avra_resource_hierarchy`                  | no       | `irods_resource_hierarchies[0]`      |         | The resource used by the Avra project
 `become_svc_acnt`                          | no       | true                                 |         | Whether or not to perform actions normally performed by the service account as the service account
-`bisque_irods_host`                        | no       | `canonical_hostname`                 |         | The iRODS host to report to BisQue.
-`bisque_password`                          | no       | admin                                |         | The password used to authenticate connections to BisQue
-`bisque_projects`                          | no       | []                                   |         | A list of projects that automatically publish to BisQue
-`bisque_url`                               | no       |                                      |         | The URL for the BisQue server to connect to
-`bisque_user`                              | no       | admin                                |         | The user to connect to BisQue as
 `build_dir`                                | no       | /tmp                                 |         | The directory used for building artifacts for deployment
 `canonical_hostname`                       | no       | `groups['irods_catalog'][0]`         |         | The external FQDN used to access the data store services
 `canonical_irods_port`                     | no       | 1247                                 |         | The port on the `canonical_hostname` host listening for connections to iRODS
-`captcn_owners`                            | no       | []                                   |         | A list of users who get ownership of CAP_TCN collections
-`captcn_readers`                           | no       | []                                   |         | A list of users who get read access to CAP_TCN collections
-`captcn_writers`                           | no       | []                                   |         | A list of users who get write access to CAP_TCN collections
-`cereus_collections`                       | no       | []                                   |         | A list of collections whose data belongs on the Cereus resource, each entry must be an absolute path
-`cereus_resource_hierarchy`                | no       | `irods_resource_hierarchies[0]`      |         | the Cereus resource used for hosting data for Cereus related projects
 `check_routes_timeout`                     | no       | 3                                    |         | The number of seconds the `check_route` playbook will wait for a response during a single port check
-`de_job_irods_user`                        | no       |                                      |         | The iRODS username used by the DE from running jobs. If undefined, it won't be created.
-`firewall_chain`                           | no       | INPUT                                |         | The iptables chain managing authorizing iRODS connections
 `irods_admin_password`                     | no       | `irods_clerver_password`             |         | The iRODS admin account password
-`irods_admin_username`                     | no       | `irods_clerver_user`                 |         | The iRODS admin account name
-`irods_amqp_exchange`                      | no       | irods                                |         | The AMQP exchange used to publish events
+`irods_admin_username`                     | no       | `irods_clerver_user`                 |         | the iRODS admin account name
+`irods_amqp_exchange`                      | no       | irods                                |         | the AMQP exchange used to publish events
 `irods_amqp_host`                          | no       | `groups['amqp'][0]`                  |         | the FQDN or IP address of the server hosting the AMQP service
 `irods_amqp_mgmt_port`                     | no       | 15672                                |         | The TCP port used for management of the AMQP vhost
 `irods_amqp_password`                      | no       | guest                                |         | The password iRODS uses to connect to the AMQP vhost
@@ -64,28 +51,20 @@ Variable                                   | Required | Default                 
 `irods_other_host_entries`                 | no       | []                                   |         | A list of other FQDNs to add to /etc/hosts
 `irods_parallel_transfer_buffer_size`      | no       | 100                                  |         | The transfer buffer size in MiB for each stream during parallel transfer
 `irods_publish_rs_image`                   | no       | false                                |         | Whether or not to publish a freshly build resource server docker image to dockerhub.
-`irods_re_host`                            | no       | `groups['irods_catalog'][0]`         |         | The FQDN or IP address of the iRODS rule engine host
-`irods_resource_hierarchies`               | no       | `[ { "name": "demoResc" } ]`         |         | The list of resource hierarchies that need to exist, _see below_
-`irods_rs_image`                           | no       | ds-irods-rs-onbuild                  |         | The name of the unpublished RS image to be generated
-`irods_server_control_plane_key`           | no       | TEMPORARY__32byte_ctrl_plane_key     |         | The server control plane key
-`irods_server_port_range_end`              | no       | 20199                                |         | The last address in the range of auxillary TCP and UDP ports
-`irods_server_port_range_start`            | no       | 20000                                |         | The first address in the range of auxillary TCP and UDP ports
-`irods_service_account_name`               | no       | irods                                |         | The system account used to run the iRODS server processes
-`irods_service_group_name`                 | no       | `irods_service_account_name`         |         | The system group used to run the iRODS server processes
-`irods_storage_resources`                  | no       | []                                   |         | A list of storage resources hosted on the server being configured, _see below_
-`irods_user_password_salt`                 | no       |                                      |         | The salt used when obfuscating user passwords stored in the catalog database
-`irods_version`                            | no       | 4.2.8                                |         | The version of iRODS to work with
-`irods_zone_key`                           | no       | TEMPORARY_zone_key                   |         | The zone key
-`irods_zone_name`                          | no       | tempZone                             |         | The name of the zone
-`mdrepo_cli_account`                       | no       | null                                 |         | The iRODS account used my the MD Repo CLI
-`mdrepo_landing_colls`                     | no       | []                                   |         | The set of paths to the base collections used my the MD Repo service for data ingest
-`pire_manager`                             | no       | null                                 |         | The username that owns the PIRE project collection, if `null`, the collection isn't created.
-`pire_resource_hierarchy`                  | no       | `irods_resource_hierarchies[0]`      |         | The resource used by the PIRE project
+`irods_re_host`                            | no       | `groups['irods_catalog'][0]`         |         | the FQDN or IP address of the iRODS rule engine host
+`irods_resource_hierarchies`               | no       | [ { "name": "demoResc" } ]           |         | the list of resource hierarchies that need to exist, _see below_
+`irods_server_control_plane_key`           | no       | TEMPORARY__32byte_ctrl_plane_key     |         | the server control plane key
+`irods_server_port_range_end`              | no       | 20199                                |         | the last address in the range of auxillary TCP and UDP ports
+`irods_server_port_range_start`            | no       | 20000                                |         | the first address in the range of auxillary TCP and UDP ports
+`irods_service_account_name`               | no       | irods                                |         | the system account used to run the iRODS server processes
+`irods_service_group_name`                 | no       | `irods_service_account_name`         |         | the system group used to run the iRODS server processes
+`irods_storage_resources`                  | no       | []                                   |         | a list of storage resources hosted on the server being configured, _see below_
+`irods_user_password_salt`                 | no       |                                      |         | the salt used when obfuscating user passwords stored in the catalog database
+`irods_version`                            | no       | 4.2.8                                |         | the version of iRODS to work with
+`irods_zone_key`                           | no       | TEMPORARY_zone_key                   |         | the zone key
+`irods_zone_name`                          | no       | tempZone                             |         | the name of the zone
 `report_email_addr`                        | no       | root@localhost                       |         | The address where reports are to be emailed.
 `restart_irods`                            | no       | false                                |         | iRODS can be restarted on the servers having config file changes, _see below_
-`sernec_owners`                            | no       | []                                   |         | A list of users who get ownership of sernec collections
-`sernec_readers`                           | no       | []                                   |         | A list of users who get read access to sernec collections
-`sernec_writers`                           | no       | []                                   |         | A list of users who get write access to sernec collections
 `sftp_port`                                | no       | 2022                                 |         | The SFTP service port number
 `sftp_proxy_allowed`                       | no       | `[]`                                 |         | A list of network/masks for the proxy servers allowed access to the SFTP servers
 `sftpgo_admin_ui_port`                     | no       | 18023                                |         | The SFTPGo admin UI service port number
@@ -94,13 +73,7 @@ Variable                                   | Required | Default                 
 `sftpgo_irods_proxy_username`              | no       | sftp                                 |         | The irods user who provides proxy access to SFTPGo
 `sftpgo_irods_proxy_password`              | yes      |                                      |         | The password of the SFTPGo irods proxy user
 `sftpgo_vault_dir`                         | no       | /sftpgo_vault                        |         | The directory SFTPGo will use for saving state
-`sparcd_admin`                             | no       | null                                 |         | The user name of the Sparc'd administrator. If this isn't set, no sparcd rules will fire.
-`sparcd_base_collection`                   | no       | _see description_                    |         | The base iRODS collection used by Sparc'd. If `sparcd_admin` is `null`, the default is `null`, otherwise it is `/{{ irods_zone_name }}/home/{{ sparcd_admin }}/Sparcd/Collections`.
-`sparcd_report_email_addr`                 | no       | _see description_                    |         | The email address where SPARC'd notifications are sent. If `sparcd_admin` is `null`, the default is `null`, otherwise it is `report_email_addr`.
 `sysctl_kernel`                            | no       | []                                   |         | A list of sysctl kernel parameters to set on the iRODS catalog service provider, _see_below_
-`terraref_base_collection`                 | no       |                                      |         | The base collection for the TerraREF project. If it isn't present no TerraREF rules will fire.
-`terraref_manager`                         | no       | `irods_clerver_user`                 |         | The iRODS user who is responsible for TerraREF data.
-`terraref_resource_hierarchy`              | no       | `irods_resource_hierarchies[0]`      |         | The resource used by the TerraREF project.
 `webdav_access_limit`                      | no       |                                      |         | If defined, the upper limit on the number of simultaneous requests that will be served by webdav
 `webdav_allowed_src`                       | no       | `[ "0.0.0.0/0" ]`                    |         | A list of network/masks for the clients allowed direct access to the WebDAV servers
 `webdav_auth_name`                         | no       | CyVerse                              |         | Authorization realm to use for the Data Store
@@ -114,8 +87,8 @@ Variable                                   | Required | Default                 
 `webdav_max_request_workers`               | no       | 192                                  |         | The upper limit on the number of simultaneous requests that will be served. This typically have the value of `webdav_server_limit` multiplied by `webdav_threads_per_child`
 `webdav_purgeman_irods_user`               | no       | `irods_admin_username`               |         | The irods user who converts data object uuid to path
 `webdav_purgeman_irods_password`           | yes      |                                      |         | The password of the purgeman irods user
-`webdav_server_limit`                      | no       | 48                                   |         | the number of cpu cores to be used
-`webdav_threads_per_child`                 | no       | 4                                    |         | the number of threads per core to be created
+`webdav_server_limit`                      | no       | 48                                   |         | The number of cpu cores to be used
+`webdav_threads_per_child`                 | no       | 4                                    |         | The number of threads per core to be created
 `webdav_tls_cert`                          | no       |                                      |         | The TLS certificate file contents
 `webdav_tls_cert_file`                     | no       | /etc/ssl/certs/dummy.crt             |         | The TLS certificate file used for encrypted communication
 `webdav_tls_chain`                         | no       |                                      |         | The TLS certificate chain file contents

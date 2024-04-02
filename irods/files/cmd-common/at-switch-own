@@ -1,0 +1,71 @@
+#!/bin/bash
+#
+# changes the ownership of everything in iRODS own by one user to a new user
+#
+# USAGE:
+#  at-switch-own CUR-OWNER CUR-OWNER-ZONE NEW-OWNER NEW-OWNER-ZONE
+#
+# PARAMETERS:
+#  CUR-OWNER       The iRODS username of the current owner
+#  NEW-OWNER-ZONE  The zone where CUR-OWNER is authenticated.
+#  NEW-OWNER       The iRODS username of the new owner
+#  NEW-OWNER-ZONE  The zone where NEW-OWNER is authenticated.
+
+set -o nounset -o pipefail
+
+
+main()
+{
+  if [[ "$#" -lt 4 ]]
+  then
+    local execName
+    execName=$(basename "$0")
+
+    printf 'USAGE: %s CUR-OWNER-NAME CUR-OWNER-ZONE NEW-OWNER-NAME NEW-OWNER-ZONE\n' "$execName" >&2
+    return 1
+  fi
+
+  local curOwner="$1"
+  local curOwnerZone="$2"
+  local newOwner="$3"
+  local newOwnerZone="$4"
+
+  if ! test_user_exists "$newOwner" "$newOwnerZone"
+  then
+    printf 'The user %s#%s does not exist\n' "$newOwner" "$newOwnerZone" >&2
+    return 1
+  fi
+
+  switch_owner "$curOwner" "$curOwnerZone" "$newOwner" "$newOwnerZone"
+}
+
+
+test_user_exists()
+{
+  local user="$1"
+  local zone="$2"
+
+  local id
+  id=$(iquest '%s' "select USER_ID where USER_NAME = '$user' and USER_ZONE = '$zone'")
+
+  [[ "$id" =~ ^[0-9]+$ ]]
+}
+
+
+switch_owner()
+{
+  local curOwner="$1"
+  local curOwnerZone="$2"
+  local newOwner="$3"
+  local newOwnerZone="$4"
+
+  isql postgres <<EOSQL
+BEGIN;
+UPDATE r_data_main SET data_owner_name = '$newOwner', data_owner_zone = '$newOwnerZone' WHERE data_owner_name = '$curOwner' AND data_owner_zone = '$curOwnerZone';
+UPDATE r_coll_main SET coll_owner_name = '$newOwner', coll_owner_zone = '$newOwnerZone' WHERE coll_owner_name = '$curOwner' AND coll_owner_zone = '$curOwnerZone';
+COMMIT;
+EOSQL
+}
+
+
+main "$@"

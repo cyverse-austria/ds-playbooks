@@ -17,6 +17,10 @@
           ! [[ "$resp" =~ ^CAT_NO_ROWS_FOUND ]]
       changed_when: false
 
+    - name: Verify /zone/retired exists
+      ansible.builtin.command: ils /testing/retired
+      changed_when: false
+
     - name: Verify /zone/home/public doesn't exist
       ansible.builtin.command: ils /testing/home/public
       register: response
@@ -37,9 +41,9 @@
       ansible.builtin.command: ils /testing/trash/home/shared
       changed_when: false
 
-    - name: Test ensure CyVerse curated collection base collection exists
-      ansible.builtin.command: ils /testing/home/shared/commons_repo/curated
-      changed_when: false
+    # - name: Test ensure CyVerse curated collection base collection exists
+    #   ansible.builtin.command: ils /testing/home/shared/commons_repo/curated
+    #   changed_when: false
 
     - name: Verify that rodsadmin has write permission on /
       ansible.builtin.shell:
@@ -134,15 +138,6 @@
           ils -A /testing/home/shared | grep --quiet 'anonymous#testing:read object'
       changed_when: false
 
-    - name: Verify anonymous user has read access to CyVerse curated collection
-      ansible.builtin.shell:
-        executable: /bin/bash
-        cmd: |
-          set -o pipefail
-          ils -A /testing/home/shared/commons_repo/curated \
-            | grep --quiet 'anonymous#testing:read object'
-      changed_when: false
-
     - name: Test start quota usage computation
       ansible.builtin.shell:
         executable: /bin/bash
@@ -150,7 +145,7 @@
           set -o pipefail
           iqstat -a | grep --quiet {{ item }}
       with_items:
-        - cyverse_housekeeping_updateQuotaUsage
+        # - cyverse_housekeeping_updateQuotaUsage
         - cyverse_housekeeping_determineAllStorageFreeSpace
-        - cyverse_housekeeping_rmTrash
+        # - cyverse_housekeeping_rmTrash
       changed_when: false

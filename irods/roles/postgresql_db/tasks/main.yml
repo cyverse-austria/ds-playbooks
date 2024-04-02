@@ -1,19 +1,21 @@
 ---
-- name: verify that an admin password was provided
+- name: Verify that an admin password was provided
   assert:
     that:
       - postgresql_db_admin_password is defined
 
-- name: ensure {{ postgresql_db_name }} database exists
+- name: Ensure database exists {{ postgresql_db_name }}
   community.postgresql.postgresql_db:
     name: "{{ postgresql_db_name }}"
     port: "{{ postgresql_db_dbms_port }}"
+    login_password: "{{ postgresql_db_admin_password }}"
 
-- name: ensure {{ postgresql_db_name }} database admin user exists
+- name: Ensure database admin user exists {{ postgresql_db_name }}
   community.postgresql.postgresql_user:
     name: "{{ postgresql_db_admin_user }}"
     password: "{{ postgresql_db_admin_password }}"
     db: "{{ postgresql_db_name }}"
     priv: all
     port: "{{ postgresql_db_dbms_port }}"
-  no_log: true
+    login_password: "{{ postgresql_db_admin_password }}"
+  # no_log: true

@@ -55,7 +55,9 @@
             state: present
 
     - name: Provision Ubuntu
-      when: ansible_distribution == 'Ubuntu'
+      when: |
+        ansible_distribution == 'Ubuntu' or
+        ansible_distribution == 'Debian'
       block:
         - name: Ubuntu | install iRODS package repository signing key
           ansible.builtin.apt_key:

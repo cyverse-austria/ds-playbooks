@@ -1,27 +1,18 @@
 ---
-- name: Test play for irods_resource_up module
-  hosts: localhost
-  vars:
-    test_rsc: ChildResc
-    missing_rsc: missingRes
-  pre_tasks:
-    - name: Initialize irods session
-      shell: |
-        set -o errexit
-        if ! [[ -e "$HOME/.irods/.irodsA" ]]; then
-          iinit "$IRODS_PASSWORD" > /dev/null
-          iadmin mkresc ChildResc passthru
-          iadmin mkresc ParentResc passthru
-          iadmin addchildtoresc ParentResc ChildResc
-          echo changed
-        fi
-      register: response
-      changed_when: response.stdout == 'changed'
-
+- name: test irods_resource_up module
+  hosts: dstesting_provider_configured_1.dstesting_default
+  become: true
+  become_user: irods
+  environment:
+    TEST_PORT: 1247
+    TEST_USER_NAME: rods
+    TEST_HOST: "{{ groups['irods_catalog'][0] }}"
+    TEST_PASSWORD: rods
+    TEST_ZONE_NAME: testing
   tasks:
     - name: bring up resource
       irods_resource_up:
-        resource: "{{ test_rsc }}"
+        resource: ingestRes
         host: "{{ groups['irods_catalog'][0] }}"
         port: 1247
         admin_user: rods
