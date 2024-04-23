@@ -26,6 +26,18 @@
       become: true
       become_user: root
 
+    - name: DEBUG05
+      ansible.builtin.debug:
+        msg: "{{ item }}"
+      with_items:
+        - "path: /{{ _irods_zone_name }}/retired"
+        - "state: present"
+        - "host: {{ groups['irods_catalog'][0] }}"
+        - "port: {{ _irods_zone_port }}"
+        - "admin_user: {{ _irods_clerver_user }}"
+        - "admin_password: {{ _irods_clerver_password }}"
+        - "zone: {{ _irods_zone_name }}"
+
     - name: Ensure base collection for deleted users exists
       delegate_to: localhost
       become: false

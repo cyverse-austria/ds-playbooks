@@ -56,9 +56,34 @@
         admin_password: "{{ admin_password }}"
         zone: "{{ _irods_zone_name }}"
 
+    # - name: DEBUG03
+    #   ansible.builtin.debug:
+    #     msg: "{{ item }}"
+    #   with_items:
+    #     - "_irods_clerver_user: {{ _irods_clerver_user }}"
+    #     - "groups['irods_catalog'][0]: {{ groups['irods_catalog'][0] }}"
+    #     - "_irods_zone_port: {{ _irods_zone_port }}"
+    #     - "admin_user: {{ admin_user }}"
+    #     - "admin_password: {{ admin_password }}"
+    #     - "_irods_zone_name: {{ _irods_zone_name }}"
+
+    - name: Ensure group "rodsadmin" exists
+      delegate_to: localhost
+      become: false
+      # run_once: true
+      irods_group:
+        group: rodsadmin
+        state: present
+        host: "{{ groups['irods_catalog'][0] }}"
+        port: "{{ _irods_zone_port }}"
+        admin_user: "{{ admin_user }}"
+        admin_password: "{{ admin_password }}"
+        zone: "{{ _irods_zone_name }}"
+
     - name: Ensure clerver user is in group rodsadmin
       delegate_to: localhost
       become: false
+      # run_once: true
       irods_group_member:
         group: rodsadmin
         users:
@@ -70,10 +95,27 @@
         admin_password: "{{ admin_password }}"
         zone: "{{ _irods_zone_name }}"
 
+    - name: DEBUG04
+      ansible.builtin.debug:
+        msg: "{{ item }}"
+      with_items:
+        - "groups['irods_catalog'][0]: {{ groups['irods_catalog'][0] }}"
+        - "_irods_clerver_password: {{ _irods_clerver_password }}"
+        - "admin_password: {{ admin_password }}"
+        - "become: _become_svc_acnt: {{ _become_svc_acnt }}"
+        - "become_user: _irods_service_account_name: {{ _irods_service_account_name }}"
+
     - name: Initialize resource server connection to catalog service providers
       irods_clerver_auth:
-        provider: "{{ groups['irods_catalog'][0] }}"
-        password: "{{ _irods_clerver_password }}"
+        PASSWORD: "{{ _irods_clerver_password }}"
+        IRODS_HOST: "{{ inventory_hostname }}"
+        IRODS_PORT: "{{ _irods_zone_port }}"
+        IRODS_USER_NAME: "{{ irods_admin_username }}"
+        IRODS_ZONE_NAME: "{{ irods_zone_name }}"
+        # provider: "{{ groups['irods_catalog'][0] }}"
+        # password: "{{ admin_password }}"
+        # password: "{{ _irods_clerver_password }}"
+      timeout: 50
 
     - name: Start iRODS
       irods_ctl:

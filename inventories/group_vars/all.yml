@@ -15,4 +15,5 @@ irods_admin_username: rods
 irods_admin_password: rods
 irods_version: 4.2.8
 irods_zone_name: TUG
+irods_default_vault: /iRODS/tmp
 _irods_db_user: "{{ irods_db_user | default('irods') }}"
