@@ -1,0 +1,108 @@
+---
+- name: Postgres | Get packages
+  ansible.builtin.package_facts:
+    manager: apt
+
+- name: Postgres | Install postgresql {{ postgresql_version }}
+  when: ansible_facts.packages['postgresql-common'] is not defined
+  notify:
+    - restart postgresql
+  block:
+    - name: Postgres | Update pkg cache
+      ansible.builtin.apt:
+        update_cache: true
+        upgrade: safe
+
+    - name: Postgres | Install needed packages
+      ansible.builtin.apt:
+        name:
+          - gnupg2
+          - python3-psycopg2
+
+    - name: Postgres | Add repo key
+      ansible.builtin.apt_key:
+        url: "https://www.postgresql.org/media/keys/ACCC4CF8.asc"
+        state: present
+
+    - name: Postgres | Cread source-file
+      ansible.builtin.copy:
+        dest: /etc/apt/sources.list.d/pgdg.list
+        content: |
+          deb http://apt.postgresql.org/pub/repos/apt/ {{ ansible_lsb.codename }}-pgdg main
+        owner: root
+        group: root
+        mode: "0544"
+
+    - name: Postgres | Install postgresql server/client ver {{ postgresql_version }}
+      ansible.builtin.apt:
+        update_cache: true
+        name:
+          - postgresql-{{ postgresql_version }}
+          - postgresql-client-{{ postgresql_version }}
+
+    - name: Postgres | Change postgres password
+      community.postgresql.postgresql_user:
+        name: "postgres"
+        password: "{{ postgresql_password }}"
+        state: present
+      no_log: true
+      become: true
+      become_user: "postgres"
+
+- name: Postgres | Change postgresql.conf 1/3
+  ansible.builtin.lineinfile:
+    path: /etc/postgresql/{{ postgresql_version }}/main/postgresql.conf
+    line: "listen_addresses = '*'"
+    state: present
+    insertbefore: '^port'
+  notify:
+    - restart postgresql
+
+- name: Postgres | Change postgresql.conf 2/3
+  ansible.builtin.lineinfile:
+    path: /etc/postgresql/{{ postgresql_version }}/main/postgresql.conf
+    regex: '^(\s*port\s*=\s*)[0-9]+(\s*.*)$'
+    line: '\g<1>{{ postgresql_port }}\g<2>'
+    backrefs: true
+  notify:
+    - restart postgresql
+
+- name: Postgres | Change postgresql.conf 3/3
+  ansible.builtin.lineinfile:
+    path: /etc/postgresql/{{ postgresql_version }}/main/postgresql.conf
+    regex: '^(\s*ssl\s*=\s*on)\s*$'
+    line: '#\1'
+    backrefs: true
+  notify:
+    - restart postgresql
+
+- name: Postgres | Change pg_hba.conf 1/3
+  ansible.builtin.lineinfile:
+    path: /etc/postgresql/{{ postgresql_version }}/main/pg_hba.conf
+    regex: "{{ item }}"
+    state: absent
+  notify:
+    - restart postgresql
+  with_items:
+    # - '^local *all *postgres *peer'
+    - '^local *all *all *peer'
+
+- name: Postgres | Change pg_hba.conf 2/3
+  ansible.builtin.lineinfile:
+    path: /etc/postgresql/{{ postgresql_version }}/main/pg_hba.conf
+    regexp: '^local *all *all *md5'
+    line: "local   all             all                                     md5"
+    insertbefore: '^local'
+    firstmatch: true
+  notify:
+    - restart postgresql
+
+- name: Postgres | Change pg_hba.conf 3/3
+  ansible.builtin.lineinfile:
+    path: /etc/postgresql/{{ postgresql_version }}/main/pg_hba.conf
+    regexp: '^host *all *all *{{ postgresql_subnet }} *md5'
+    line: "host    all             all             {{ postgresql_subnet }}      md5"
+    insertbefore: '^host'
+    firstmatch: true
+  notify:
+    - restart postgresql

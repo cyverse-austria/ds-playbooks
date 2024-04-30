@@ -1,0 +1,53 @@
+---
+- name: Install rabbitmq
+  ansible.builtin.include_tasks: "{{ ansible_os_family }}.yml"
+
+- name: Create rabbitmq config file
+  ansible.builtin.template:
+    src: etc/rabbitmq/rabbitmq.conf.j2
+    dest: /etc/rabbitmq/rabbitmq.conf
+    owner: rabbitmq
+    group: rabbitmq
+    mode: "0644"
+  notify:
+    - Restart broker
+
+- name: Enable management plugin
+  community.rabbitmq.rabbitmq_plugin:
+    names: rabbitmq_management
+    state: enabled
+  notify:
+    - Restart broker
+
+- name: Create vhost(s)
+  community.rabbitmq.rabbitmq_vhost:
+    name: "{{ vhost }}"
+    state: present
+  with_items:
+    - "{{ rabbitmq__vhosts }}"
+  loop_control:
+    # index_var: vhost
+    loop_var: vhost
+    label: "{{ vhost }}"
+  when:
+    - rabbitmq__vhosts is defined
+    - rabbitmq__vhosts|length>0
+  notify:
+    - Restart broker
+
+- name: Create User
+  ansible.builtin.include_tasks:
+    file: create_user.yml
+  vars:
+    create_vhost: "{{ vhost }}"
+
+  with_items:
+    - "{{ rabbitmq__vhosts }}"
+  loop_control:
+    loop_var: vhost
+    label: "{{ vhost }}"
+
+- name: Remove default guest-user
+  community.rabbitmq.rabbitmq_user:
+    name: guest
+    state: absent

@@ -1,0 +1,7 @@
+---
+- name: Install rabbitmq
+  ansible.builtin.apt:
+    name: "rabbitmq-server={{ rabbitmq__version }}*"
+    allow_downgrade: true
+    update_cache: true
+    state: present

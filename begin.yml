@@ -1,0 +1,56 @@
+---
+
+- name: Like pipeline
+  hosts: all
+  roles:
+    - role: hosts-file
+  tasks:
+    - name: Linked to new python-version
+      community.general.alternatives:
+        name: python
+        path: /usr/bin/python3
+        link: /usr/bin/python
+        state: auto
+
+- name: Packages for irods-server
+  hosts: irods
+  tasks:
+    - name: Postgres | Install needed packages
+      ansible.builtin.apt:
+        name:
+          - gnupg2
+          - python3-pip
+          - python3-pika
+          - jq
+
+- name: Packages for irods-icatalog_server
+  hosts: irods_catalog
+  tasks:
+    - name: Postgres | Install needed packages
+      ansible.builtin.apt:
+        name:
+          - jq
+
+- name: Database
+  hosts: dbms, irods_catalog
+  roles:
+    - role: postgresql
+
+# - name: RabbitMQ
+#   hosts: amqp
+#   become: true
+#   run_once: true
+#   roles:
+#     - role: rabbitmq
+#       rabbitmq__broker_port: 1234
+#       # rabbitmq__management_port: 12345
+#       rabbitmq__management_port: "{{ _amqp_mgmt_port }}"
+#       rabbitmq__vhosts:
+#         - "{{ _amqp_vhost }}"
+#         # - "/mynew/first"
+#         # - "/mynew/second"
+#       rabbitmq__user:
+#         name: "{{ _amqp_user }}"
+#         # name: "thatsme"
+#         pass: "&thisismy1pass"
+#

@@ -1,0 +1,15 @@
+---
+- name: Create User
+  community.rabbitmq.rabbitmq_user:
+    name: "{{ rabbitmq__user.name }}"
+    password: "{{ rabbitmq__user.pass }}"
+    update_password: on_create
+    force: false
+    vhost: "{{ create_vhost }}"
+    configure_priv: .*
+    read_priv: .*
+    write_priv: .*
+    tags: administrator
+    state: present
+  notify:
+    - Restart broker
